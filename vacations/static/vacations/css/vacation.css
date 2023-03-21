@@ -1,0 +1,89 @@
+@font-face {
+    font-family: 'p22_underground_cy_prodemi';
+    src: url('../fonts/P22UndergroundCYPro-Demi.woff2') format('woff2'),
+    url('../fonts/P22UndergroundCYPro-Demi.woff') format('woff'),
+    url('../fonts/P22UndergroundCYPro-Demi.otf') format('otf');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'p22_underground_cy_probook';
+    src: url('../fonts/P22UndergroundCYPro-Book.woff2') format('woff2'),
+    url('../fonts/P22UndergroundCYPro-Book.woff') format('woff'),
+    url('../fonts/P22UndergroundCYPro-Book.otf') format('otf');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+
+/* Теперь можно использовать шрифт */
+.text-1 {
+    font-family: "p22_underground_cy_prodemi", serif;
+    font-size: 25px;
+    display: inline;
+}
+
+.text-1-year {
+    font-family: "p22_underground_cy_prodemi", serif;
+    font-size: 25px;
+    cursor: context-menu;
+    transition-duration: .2s;
+    display: inline;
+}
+
+.text-1-year:hover {
+    color: #0a53be;
+}
+
+.text-2 {
+    font-family: "p22_underground_cy_prodemi", serif;
+    font-size: 20px;
+}
+
+
+.text-3 {
+    font-family: "p22_underground_cy_prodemi", serif;
+    font-size: 15px;
+    margin-top: 15px;
+}
+
+.text-4-book {
+    font-family: "p22_underground_cy_probook", serif;
+    font-size: 19px;
+    cursor: context-menu;
+    text-align: center;
+    margin-top: 20px;
+    transition-duration: .2s;
+
+}
+
+.text-4-book:hover {
+    scale: 110%;
+    color: #0a53be;
+}
+
+.text-5-book {
+    font-family: "p22_underground_cy_probook", serif;
+    font-size: 19px;
+    cursor: context-menu;
+    text-align: center;
+    margin-top: 20px;
+    transition-duration: .2s;
+
+}
+
+.text-5-book:hover {
+    color: #0a53be;
+}
+
+
+.hover-mouse {
+    transition-duration: .2s;
+}
+
+.hover-mouse:hover {
+    background-color: #F2F2F2;
+}

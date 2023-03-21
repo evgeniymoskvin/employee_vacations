@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+
+    {% load static %}
+    <title>
+    {% block title %}
+    {% endblock %}
+    </title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="{% static 'vacations/Bootstrap-5-5.1.3/css/bootstrap.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'vacations/css/vacation.css' %}"/>
+    <script type="text/javascript" src="{% static 'vacations/jQuery-3.6.0/jquery-3.6.0.min.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'vacations/Bootstrap-5-5.1.3/js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vacations/Bootstrap-5-5.1.3/js/bootstrap.bundle.min.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'vacations/google-chart/loader.js' %}"></script>
+
+    <script>
+
+        function openAddEmployeeModal() {
+            $('#addEmployeeModal').modal('show');
+        }
+    </script>
+
+    {% block script %}
+    {% endblock %}
+
+</head>
+<body>
+<nav class="py-2 bg-light border-bottom">
+    <div class="container d-flex flex-wrap">
+        <ul class="nav me-auto">
+            <li class="nav-item">
+                <a class="nav-link text-black navbar-text " href="{% url 'index' %}"></a>
+            </li>
+        </ul>
+        <ul class="nav">
+            <li class="nav-item">
+                <h6 class="text-3" href="#" id="navbarDarkDropdownMenuLink" role="button"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    МЕНЮ
+                </h6>
+                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                    <li><a class="dropdown-item" href="{% url 'index' %}">Главная</a></li>
+                    <li><a class="dropdown-item" href="{% url 'employees' %}">Список сотрудников</a></li>
+                </ul>
+            </li>
+
+
+        </ul>
+
+    </div>
+</nav>
+
+<div class="container">
+    {% block content %}
+    {% endblock %}
+</div>
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,97 @@
+{% extends "vacations/base.html" %}
+
+{% block title %}
+    Список сотрудников
+{% endblock %}
+
+{% block script %}
+    <script>
+        function openDeleteModal(id_emp, name_emp) {
+            document.getElementById("name_employee").innerText = name_emp
+            document.getElementById("delete-emp-id").value = id_emp
+            $('#deleteEmployeeModal').modal('show');
+        }
+
+        function openAddEmpModal() {
+            $('#addEmployeeModal').modal('show');
+        }
+
+    </script>
+{% endblock %}
+
+
+{% block content %}
+    <div style="margin-top: 15px; margin-bottom: 20px">
+        <h2 class="text-1"> СПИОК СОТРУДНИКОВ</h2>
+    </div>
+
+    <ul class="list-group">
+        {% for employee in data_employee %}
+            <li class="list-group-item d-flex justify-content-between align-items-center hover-mouse">
+                {{ employee }}
+                <button onclick="openDeleteModal({{ employee.id }}, '{{ employee }}')"
+                        class="btn btn-outline-danger btn-sm">Удалить
+                </button>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div class="justify-content-center">
+        <p onclick="openAddEmpModal()" class="text-4-book"> ДОБАВИТЬ СОТРУДНИКА</p>
+    </div>
+
+    <!-- Модальное окно для удаления сотрудника-->
+
+    <div class="modal fade" id="deleteEmployeeModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Удаление сотрудника</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" action="{% url 'delete-employee' %}">
+                    {% csrf_token %}
+                    <div class="modal-body" id="modalBody">
+                        <p>Хотите удалить сотрудника и все его отпуска:</p>
+                        <p class="text-2" id="name_employee">Тут имя сотрудника</p>
+                    </div>
+                    <div class="modal-footer">
+                        <input hidden type="text" name="delete-emp-id" id="delete-emp-id">
+                        <input type="submit" class="btn btn-outline-danger" value="Удалить">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для создания сотрудника-->
+
+    <div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Добавить сотрудника</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="modal-body" id="modalBody">
+                        {{ employee_form }}
+                    </div>
+                    <div class="modal-footer">
+                        <input hidden type="text" name="delete-emp-id" id="delete-emp-id">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <input type="submit" class="btn btn-outline-primary" value="Создать">
+
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
