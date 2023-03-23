@@ -15,11 +15,27 @@
     url('../fonts/P22UndergroundCYPro-Book.otf') format('otf');
     font-weight: bold;
     font-style: normal;
-    font-display: swap;
 }
 
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
 
 /* Теперь можно использовать шрифт */
+
+.text-index {
+    font-family: "p22_underground_cy_prodemi", serif;
+    font-size: 125px;
+    margin-top: 125px;
+    padding-top: 0;
+    line-height: 0.75;
+}
+
 .text-1 {
     font-family: "p22_underground_cy_prodemi", serif;
     font-size: 25px;
@@ -48,6 +64,7 @@
     font-family: "p22_underground_cy_prodemi", serif;
     font-size: 15px;
     margin-top: 15px;
+    transition: .05s ease-in-out;
 }
 
 .text-4-book {
@@ -79,11 +96,86 @@
     color: #0a53be;
 }
 
-
 .hover-mouse {
     transition-duration: .2s;
 }
 
 .hover-mouse:hover {
     background-color: #F2F2F2;
+}
+
+.text-3-menu:hover {
+    color: #0a53be;
+}
+
+.text-3-menu {
+    font-family: "p22_underground_cy_probook", serif;
+    font-size: 15px;
+    margin-top: 15px;
+    transition: .05s ease-in-out;
+    color: black;
+    text-transform: uppercase;
+}
+
+.text-index-book {
+    font-family: "p22_underground_cy_probook", serif;
+    font-size: 15px;
+    margin-top: 15px;
+    transition: .05s ease-in-out;
+    color: black;
+    text-transform: uppercase;
+}
+
+.text-index-book-p {
+    font-family: "p22_underground_cy_probook", serif;
+    font-size: 30px;
+    margin-top: 15px;
+    margin-bottom: 0;
+    transition: .05s ease-in-out;
+    color: black;
+    text-transform: uppercase;
+}
+
+.text-index-demi-h2 {
+    font-family: "p22_underground_cy_prodemi", serif;
+    font-size: 30px;
+    margin-bottom: 0;
+    transition: .05s ease-in-out;
+    color: black;
+    text-transform: uppercase;
+}
+
+
+.button-index {
+    font-family: "p22_underground_cy_prodemi", serif;
+    text-transform: uppercase;
+    font-size: 30px;
+    border-radius: 15px;
+    text-align: center;
+    border: 2px solid black;
+    background-color: white;
+    transition: all .05s ease-in-out;
+    color: black;
+    padding-left: 50px;
+    padding-right: 50px;
+    padding-top: 10px;
+}
+
+.button-index:hover {
+    scale: 110%;
+    border-radius: 15px;
+    text-align: center;
+    background-color: black;
+    color: white;
+}
+
+.my-nav {
+    background-color: white;
+    position: sticky;
+    top: 0;
+}
+
+.content-fade {
+    scroll-behavior: smooth;
+    animation: fade-in .4s ease;
 }

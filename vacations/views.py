@@ -8,6 +8,11 @@ from .models import EmployeeModel, VacationsModel
 from .forms import AddVacationForm, AddEmployeeForm
 
 
+class Index2View(View):
+    def get(self, request):
+        return render(request, 'vacations/index-2.html')
+
+
 class IndexView(View):
     dt_now = datetime.datetime.now()
 
@@ -71,6 +76,7 @@ class ChangeEmployeeView(View):
         if form.is_valid():
             form.save()
         return redirect(f'employees')
+
 
 class DeleteEmployeeView(View):
     def post(self, request):

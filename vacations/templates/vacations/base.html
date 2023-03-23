@@ -5,8 +5,8 @@
 
     {% load static %}
     <title>
-    {% block title %}
-    {% endblock %}
+        {% block title %}
+        {% endblock %}
     </title>
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="{% static 'vacations/Bootstrap-5-5.1.3/css/bootstrap.css' %}"/>
@@ -29,38 +29,50 @@
     {% endblock %}
 
 </head>
-<body>
-<nav class="py-2 bg-light border-bottom">
-    <div class="container d-flex flex-wrap">
-        <ul class="nav me-auto">
-            <li class="nav-item">
-                <a class="nav-link text-black navbar-text " href="{% url 'index' %}"></a>
-            </li>
-        </ul>
-        <ul class="nav">
-            <li class="nav-item">
-                <h6 class="text-3" href="#" id="navbarDarkDropdownMenuLink" role="button"
-                    data-bs-toggle="dropdown" aria-expanded="false">
-                    МЕНЮ
-                </h6>
-                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-                    <li><a class="dropdown-item" href="{% url 'index' %}">Главная</a></li>
-                    <li><a class="dropdown-item" href="{% url 'employees' %}">Список сотрудников</a></li>
-                </ul>
-            </li>
+<body class="content-fade">
+<nav class="py-2 my-nav">
+    <div class="container">
+        <div class="container d-flex flex-wrap">
+            <ul class="nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link text-black navbar-text " href="{% url 'index' %}"></a>
+                </li>
+            </ul>
+            <ul class="nav">
+                <li class="nav-item">
+                    <a class="nav-link text-3 text-3-menu" href="{% url 'index' %}">График отпусков</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-3 text-3-menu" href="{% url 'employees' %}">Список сотрудников</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-3 text-3-menu" href="#"}>Вход</a>
+                </li>
+                <!--
+                <li class="nav-item">
+                    <h6 class="text-3 text-3-menu" href="#" id="navbarDarkDropdownMenuLink" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        МЕНЮ
+                    </h6>
+                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                        <li><a class="dropdown-item" href="{% url 'index' %}">Главная</a></li>
+                        <li><a class="dropdown-item" href="{% url 'employees' %}">Список сотрудников</a></li>
+                        <li><a class="dropdown-item" href="#">Войти</a></li>
+                    </ul>
+                </li> -->
 
 
-        </ul>
+            </ul>
 
+        </div>
     </div>
 </nav>
 
 <div class="container">
     {% block content %}
     {% endblock %}
+
 </div>
-
-
 
 
 </body>

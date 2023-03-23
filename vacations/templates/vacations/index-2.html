@@ -1,0 +1,36 @@
+{% extends "vacations/base.html" %}
+{% load static %}
+{% block title %}
+    График отпусков
+{% endblock %}
+
+{% block script %}
+    <script>
+
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-8">
+            <h1 class="text-index">ГРАФИК <br>ОТПУСКОВ</h1>
+            <p class="text-index-book">Сервис планирования и учета отпусков сотрудников</p>
+            <div style="margin-top: 150px">
+                <p class="text-index-book-p">Для начала работы выполните вход*:</p>
+                <p style="font-size: 12px; margin-top: 0">*Логин и пароль Вы можете получить у администратора</p>
+                <button class="button-index">Войти</button>
+            </div>
+        </div>
+        <div class="col d-flex justify-content-center align-items-center">
+            <p class="text-index-book">
+                <img src="{% static "vacations/img/travel-holiday-vacation-25-svgrepo-com.svg"%}" width="400">
+            </p>
+        </div>
+    </div>
+
+
+    <div>
+        <div id="timelines" style="height: 100%;"></div>
+    </div>
+
+{% endblock %}
