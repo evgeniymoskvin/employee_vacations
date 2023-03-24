@@ -1,21 +1,28 @@
 import datetime
 from django.shortcuts import render, redirect
+from django.utils.decorators import method_decorator
 from django.views import View
+from django.contrib.auth.decorators import login_required
 from django.core import serializers
 from django.http import JsonResponse
 from django.db.models import Q
 from .models import EmployeeModel, VacationsModel
-from .forms import AddVacationForm, AddEmployeeForm
-
-
-class Index2View(View):
-    def get(self, request):
-        return render(request, 'vacations/index-2.html')
+from .forms import AddVacationForm, AddEmployeeForm, LoginForm
 
 
 class IndexView(View):
+    def get(self, request):
+        form_login = LoginForm()
+        content = {
+            "login_form": form_login,
+        }
+        return render(request, 'vacations/index.html', content)
+
+
+class ChartView(View):
     dt_now = datetime.datetime.now()
 
+    @method_decorator(login_required(login_url='index'))
     def get(self, request, dt=dt_now.year):
         form = AddVacationForm()
         dt = 2023
@@ -23,11 +30,22 @@ class IndexView(View):
             Q(vacation_start__gte=f"{dt}-01-01") | Q(vacation_end__lte=f"{dt}-12-31")).filter(
             vacation_start__lt=f"{dt + 1}-01-01").filter(vacation_end__gt=f"{dt - 1}-12-31")
         # data_all = VacationsModel.objects.all()
+        vacation_in_this_month = []
+        for empl in data_all:
+            if empl.vacation_start.year == datetime.datetime.now().year or empl.vacation_end.year == datetime.datetime.now().year:
+                if empl.vacation_start.month == datetime.datetime.now().month or empl.vacation_end.month == datetime.datetime.now().month:
+                    print(empl)
+                    vacation_in_this_month.append(empl)
+
+        print(datetime.datetime.now().month)
+        print(vacation_in_this_month)
+
         content = {"data": data_all,
                    "year": dt,
                    "form": form,
+
                    }
-        return render(request, "vacations/index.html", content)
+        return render(request, "vacations/chart.html", content)
 
     def post(self, request):
         """post запрос со страницы поиска"""
@@ -52,7 +70,7 @@ class IndexView(View):
 
         data_all = VacationsModel.objects.all()
         content = {"data": data_all}
-        return render(request, "vacations/index.html", content)
+        return render(request, "vacations/chart.html", content)
 
 
 class AddNewVacationView(View):
@@ -60,7 +78,7 @@ class AddNewVacationView(View):
         form = AddVacationForm(request.POST)
         if form.is_valid():
             form.save()
-        return redirect(f'index')
+        return redirect(f'chart')
 
 
 class ChangeEmployeeView(View):
@@ -85,3 +103,8 @@ class DeleteEmployeeView(View):
         print(obj)
         obj.delete()
         return redirect(f'employees')
+
+
+
+
+

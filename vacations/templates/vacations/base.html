@@ -23,6 +23,15 @@
         function openAddEmployeeModal() {
             $('#addEmployeeModal').modal('show');
         }
+
+        function openLoginModal() {
+            if ('{{ user }}' === 'AnonymousUser') {
+                $('#loginModal').modal('show');
+            } else {
+                window.location.replace("{% url 'chart' %}");
+            }
+
+        }
     </script>
 
     {% block script %}
@@ -35,31 +44,47 @@
         <div class="container d-flex flex-wrap">
             <ul class="nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link text-black navbar-text " href="{% url 'index' %}"></a>
+                    <a class="nav-link text-black navbar-text " href="#"></a>
                 </li>
             </ul>
             <ul class="nav">
                 <li class="nav-item">
-                    <a class="nav-link text-3 text-3-menu" href="{% url 'index' %}">График отпусков</a>
+                    <a class="nav-link text-3 text-3-menu" href="{% url 'index' %}">Главная</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link text-3 text-3-menu" href="{% url 'employees' %}">Список сотрудников</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-3 text-3-menu" href="#"}>Вход</a>
-                </li>
-                <!--
-                <li class="nav-item">
-                    <h6 class="text-3 text-3-menu" href="#" id="navbarDarkDropdownMenuLink" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        МЕНЮ
-                    </h6>
-                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-                        <li><a class="dropdown-item" href="{% url 'index' %}">Главная</a></li>
-                        <li><a class="dropdown-item" href="{% url 'employees' %}">Список сотрудников</a></li>
-                        <li><a class="dropdown-item" href="#">Войти</a></li>
-                    </ul>
-                </li> -->
+
+                <!-- Кнопка график отпусков -->
+                {% if not user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link text-3 text-3-menu" href="#" onclick="openLoginModal()">График отпусков</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link text-3 text-3-menu" href="{% url 'chart' %}">График отпусков</a>
+                    </li>
+                {% endif %}
+
+                <!-- Кнопка список сотрудников -->
+                {% if not user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link text-3 text-3-menu" href="#" onclick="openLoginModal()">Список
+                            сотрудников</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link text-3 text-3-menu" href="{% url 'employees' %}">Список сотрудников</a>
+                    </li>
+                {% endif %}
+
+                <!-- Кнопка аутентификации -->
+                {% if not user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link text-3 text-3-menu" href="#" onclick="openLoginModal()">Вход</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link text-3 text-3-menu" href="{% url 'logout' %}">Выйти</a>
+                    </li>
+                {% endif %}
 
 
             </ul>
@@ -74,6 +99,33 @@
 
 </div>
 
+
+<!-- Модальное окно логина -->
+
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" style="text-transform: uppercase;">Вход</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'login-modal' %}">
+                {% csrf_token %}
+                <div class="modal-body" id="modalBody">
+                    <p class="text-3" style="text-transform: uppercase;">Имя пользователя</p>
+                    {{ login_form.username }}
+                    <p class="text-3" style="text-transform: uppercase; margin-top: 25px">Пароль</p>
+                    {{ login_form.password }}
+                    <br>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <input type="submit" class="btn btn-outline-primary" value="Войти">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>

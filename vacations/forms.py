@@ -1,5 +1,6 @@
 from .models import VacationsModel, EmployeeModel
-from django.forms import ModelForm, Select, SelectDateWidget, DateInput, TextInput
+from django.forms import ModelForm, Select, SelectDateWidget, DateInput, TextInput, CharField, PasswordInput
+from django.contrib.auth.forms import AuthenticationForm, UsernameField, UserCreationForm
 from django.contrib.admin.widgets import AdminDateWidget
 
 
@@ -19,6 +20,7 @@ class AddVacationForm(ModelForm):
 
                    }
 
+
 class AddEmployeeForm(ModelForm):
     class Meta:
         model = EmployeeModel
@@ -26,10 +28,26 @@ class AddEmployeeForm(ModelForm):
 
         widgets = {
             "first_name": TextInput(attrs={"class": "form-control",
-                                                     "aria-label": "Здание"}),
+                                           "aria-label": "Здание",
+                                           'placeholder': 'Имя'}),
             "middle_name": TextInput(attrs={"class": "form-control",
-                                                     "aria-label": "Здание"}),
+                                            "aria-label": "Здание",
+                                           'placeholder': 'Отчество'}),
             "last_name": TextInput(attrs={"class": "form-control",
-                                                     "aria-label": "Здание"}),
+                                          "aria-label": "Здание",
+                                           'placeholder': 'Фамилия'})
 
         }
+
+
+class LoginForm(AuthenticationForm):
+    username = UsernameField(
+        widget=TextInput(
+            attrs={"autofocus": True, "class": "form-control", 'id': 'floatingInput', 'placeholder': 'Имя пользователя'}))
+    password = CharField(
+        label=("Password"),
+        strip=False,
+        widget=PasswordInput(
+            attrs={"autocomplete": "current-password", "class": "form-control", 'id': 'floatingPassword',
+                   'placeholder': 'Пароль'}),
+    )

@@ -1,0 +1,277 @@
+{% extends "vacations/base.html" %}
+
+{% block title %}
+    График отпусков
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+
+
+        google.charts.load("current", {packages: ["timeline"]});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+
+            var container = document.getElementById('timelines');
+            var chart = new google.visualization.Timeline(container);
+            var dataTable = new google.visualization.DataTable();
+            var line_year = {{ year }}
+
+                dataTable.addColumn({type: 'string', id: 'Name'});
+            dataTable.addColumn({type: 'date', id: 'Start'});
+            dataTable.addColumn({type: 'date', id: 'End'});
+            dataTable.addColumn({type: 'string', role: 'tooltip', id: 'link', 'p': {'html': true}});
+            //dataTable.addRows([
+            //    ['Сотрудник 1', new Date(2023, 0, 1), new Date(2023, 0, 25), 'test'],
+            //    ['Сотрудник 1', new Date(2023, 3, 30), new Date(2023, 3, 31), 'test'],
+            //]);
+            {% for employee in data %}
+                dataTable.addRows([
+                    ['{{employee.employee}}',
+                        new Date({{ employee.vacation_start.year }}, ({{ employee.vacation_start.month}}-1), {{ employee.vacation_start.day }}),
+                        new Date({{ employee.vacation_end.year }}, ({{ employee.vacation_end.month }}-1), {{ employee.vacation_end.day }}),
+                        '{{ employee.id }}'
+                    ]
+                ]);
+            {% endfor %}
+
+            // set a padding value to cover the height of title and axis values
+            var paddingHeight = 40;
+// set the height to be covered by the rows
+            var rowHeight = dataTable.getNumberOfRows() * 50;
+// set the total chart height
+            var chartHeight = rowHeight + paddingHeight;
+
+            var options = {
+                allowHtml: true,
+                height: chartHeight,
+                hAxis: {
+                    minValue: new Date(line_year, 0, 1),
+                    maxValue: new Date(line_year+1, 0, 1),
+                },
+                tooltip: {
+                    isHtml: true,
+                    trigger: 'selection'
+                },
+
+            };
+
+            function modalWindow() {
+                var selection = chart.getSelection();
+                if (selection.length > 0) {
+
+                    var start_vacation_date = dataTable.getValue(selection[0].row, 1);
+
+                    var start_day = start_vacation_date.getDate(),
+                        start_month = Number(start_vacation_date.getMonth() + 1),
+                        start_year = start_vacation_date.getFullYear();
+
+                    start_month = (start_month < 10 ? "0" : "") + start_month;
+                    start_day = (start_day < 10 ? "0" : "") + start_day;
+                    var start_to_calendar = start_year + "-" + start_month + "-" + start_day;
+
+                    var end_vacation_date = dataTable.getValue(selection[0].row, 2);
+
+                    var end_day = end_vacation_date.getDate(),
+                        end_month = Number(end_vacation_date.getMonth() + 1),
+                        end_year = end_vacation_date.getFullYear();
+
+                    end_month = (end_month < 10 ? "0" : "") + end_month;
+                    end_day = (end_day < 10 ? "0" : "") + end_day;
+                    var end_to_calendar = end_year + "-" + end_month + "-" + end_day;
+
+
+                    document.getElementById("detailsModalLabel").innerText = dataTable.getValue(selection[0].row, 0);
+                    document.getElementById("start_date").innerText = (start_day + "." + start_month + "." + start_year);
+                    document.getElementById("end_date").innerText = (end_day + "." + end_month + "." + end_year);
+
+                    document.getElementById("count_days").innerText =
+                        (Math.round((end_vacation_date - start_vacation_date) / (1000 * 60 * 60 * 24) + 1));
+
+                    document.getElementById("delete-id").value = String(dataTable.getValue(selection[0].row, 3));
+
+
+                    document.getElementById("input-date-start").value = start_to_calendar;
+                    console.log(dataTable.getValue(selection[0].row, 2));
+
+                    document.getElementById("input-date-end").value = end_to_calendar;
+
+                    console.log(start_to_calendar);
+                    console.log(end_to_calendar);
+
+
+                    $('#detailsModal').modal('show');
+
+                }
+            }
+
+            google.visualization.events.addListener(chart, 'select', modalWindow);
+
+
+            function drawTimelineChart() {
+                chart.draw(dataTable, options);
+
+                for (let year = 2022; year <= 2035; year++) {
+                    let options = document.createElement("OPTION");
+                    document.getElementById("year").appendChild(options).innerHTML = year;
+                }
+            }
+
+            drawTimelineChart();
+
+        }
+
+        function textToInput() {
+            $('#detailsModal').modal('hide');
+            $('#editModal').modal('show');
+            document.getElementById("change-id").value = document.getElementById("delete-id").value
+            console.log(document.getElementById("change-id").value)
+        }
+
+        function showSelectYear() {
+            if (document.getElementById("select-area").style.display === 'none') {
+                document.getElementById("select-area").style.display = 'block';
+            } else {
+                document.getElementById("select-area").style.display = 'none'
+            }
+
+        }
+
+        function openAddModal() {
+            $('#addModal').modal('show');
+        }
+
+
+    </script>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+    <div class="row" style="height: 60px">
+        <div class="col-10">
+            <div style="margin-top: 15px; margin-bottom: 20px">
+                <h2 class="text-1" style="text-transform: uppercase;"> График отпусков</h2>
+                <h2 class="text-1-year">{{ year }}</h2>
+            </div>
+        </div>
+        <div class="col">
+            <div class="justify-content-end">
+                <h6 onclick="openAddModal()" class="text-5-book" style="text-align: end; text-transform: uppercase;">Добавить</h6>
+            </div>
+        </div>
+
+    </div>
+
+    <div>
+        <div id="timelines" style="height: 100%;"></div>
+    </div>
+
+
+    <!-- Модальное окно для вывода данных по отпуску-->
+    <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Детали записи</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="modal-body" id="modalBody">
+                        <h5 class="text-2" id="detailsModalLabel">Фамилия имя отчество</h5>
+                        <a>Дата начала отпуска: <p class="text-2" id="start_date"></p></a>
+                        <a>Дата окончания отпуска: <p class="text-2" id="end_date"></p></a>
+                        <a>Количество дней: <p class="text-2" id="count_days"></p></a>
+                    </div>
+                    <div class="modal-footer">
+                        <input hidden type="text" name="delete-id" id="delete-id">
+                        <input type="submit" class="btn btn-outline-danger" value="Удалить">
+                        <button onclick="textToInput()" type="button" class="btn btn-outline-primary">Редактировать
+                        </button>
+                        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Закрыть</button>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для редактирования данных по отпуску-->
+
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Редактирование записи</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="modal-body" id="modalBody">
+                        <p>Дата начала отпуска: <input type="date" id="input-date-start" name="input-date-start"/></p>
+                        <p>Дата окончания отпуска: <input type="date" id="input-date-end" name="input-date-end"/></p>
+                    </div>
+                    <div class="modal-footer">
+                        <input hidden type="text" name="change-id" id="change-id">
+                        <input type="submit" class="btn btn-outline-success" value="Изменить">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Модальное окно выбор года-->
+
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Редактирование записи</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="modal-body" id="modalBody">
+                        <p>Дата начала отпуска: <input type="date" id="input-date-start" name="input-date-start"/></p>
+                        <p>Дата окончания отпуска: <input type="date" id="input-date-end" name="input-date-end"/></p>
+                    </div>
+                    <div class="modal-footer">
+                        <input hidden type="text" name="change-id" id="change-id">
+                        <input type="submit" class="btn btn-outline-warning" value="Изменить">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для добавления данных по отпуску-->
+
+    <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Добавить запись</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" action="{% url 'add-vacation' %}">
+                    {% csrf_token %}
+                    <div class="modal-body" id="modalBody">
+                        {{ form }}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <input type="submit" class="btn btn-outline-primary" value="Создать">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
