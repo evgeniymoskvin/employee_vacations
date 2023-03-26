@@ -11,6 +11,7 @@ from .forms import AddVacationForm, AddEmployeeForm, LoginForm
 
 
 class IndexView(View):
+    """Главная страница"""
     def get(self, request):
         form_login = LoginForm()
         content = {
@@ -20,6 +21,7 @@ class IndexView(View):
 
 
 class ChartView(View):
+    """Страница с графиком отпусков сотрудников"""
     dt_now = datetime.datetime.now()
 
     @method_decorator(login_required(login_url='index'))
@@ -48,7 +50,7 @@ class ChartView(View):
         return render(request, "vacations/chart.html", content)
 
     def post(self, request):
-        """post запрос со страницы поиска"""
+        """Изменение или удаление отпуска сотрудника"""
         if request.POST.get('delete-id'):
             delete_id = int(request.POST.get('delete-id'))
             obj = VacationsModel.objects.get(id=delete_id)
@@ -74,6 +76,7 @@ class ChartView(View):
 
 
 class AddNewVacationView(View):
+    """Добавления нового отпуска сотруднику"""
     def post(self, request):
         form = AddVacationForm(request.POST)
         if form.is_valid():
@@ -82,7 +85,9 @@ class AddNewVacationView(View):
 
 
 class ChangeEmployeeView(View):
+    """Страница редактирования списка сотрудников"""
     def get(self, request):
+        """Получение списка сотрудников"""
         form_add_employee = AddEmployeeForm()
         data_employee = EmployeeModel.objects.all()
         content = {"data_employee": data_employee,
@@ -90,6 +95,7 @@ class ChangeEmployeeView(View):
         return render(request, "vacations/edit_employee.html", content)
 
     def post(self, request):
+        """Запись нового сотрудника"""
         form = AddEmployeeForm(request.POST)
         if form.is_valid():
             form.save()
@@ -97,14 +103,24 @@ class ChangeEmployeeView(View):
 
 
 class DeleteEmployeeView(View):
+    """Удаление сотрудника"""
     def post(self, request):
-        delete_emp_id = int(request.POST.get('delete-emp-id'))
-        obj = EmployeeModel.objects.get(id=delete_emp_id)
-        print(obj)
-        obj.delete()
+        if request.POST.get('delete-emp-id'):
+            delete_emp_id = int(request.POST.get('delete-emp-id'))
+            obj = EmployeeModel.objects.get(id=delete_emp_id)
+            print(obj)
+            obj.delete()
         return redirect(f'employees')
 
 
-
-
-
+class ChangeNameEmployeeView(View):
+    """Изменение ФИО сотрудника"""
+    def post(self, request):
+        if request.POST.get('change-emp-id'):
+            change_emp_id = int(request.POST.get('change-emp-id'))
+            obj = EmployeeModel.objects.get(id=change_emp_id)
+            obj.first_name = request.POST.get('input_first_name_change')
+            obj.last_name = request.POST.get('input_last_name_change')
+            obj.middle_name = request.POST.get('input_middle_name_change')
+            obj.save()
+        return redirect(f'employees')

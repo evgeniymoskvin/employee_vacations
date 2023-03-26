@@ -24,6 +24,7 @@ urlpatterns = [
     path('employees/', views.ChangeEmployeeView.as_view(), name='employees'),
     path('add/vacation/', views.AddNewVacationView.as_view(), name='add-vacation'),
     path('delete/employee/', views.DeleteEmployeeView.as_view(), name='delete-employee'),
+    path('change/employee/', views.ChangeNameEmployeeView.as_view(), name='change-employee'),
     path('modal-login', LoginView.as_view(), name='login-modal'),
     path('logout/', LogoutView.as_view(), name='logout'),
 

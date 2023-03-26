@@ -16,6 +16,17 @@
             $('#addEmployeeModal').modal('show');
         }
 
+
+        function opeChangeEmpModal(id_emp, name_emp) {
+            $('#changeEmployeeModal').modal('show');
+            var arr = name_emp.split(/\s+/);
+            document.getElementById("input_last_name_change").value = arr[0]
+            document.getElementById("input_first_name_change").value = arr[1]
+            document.getElementById("input_middle_name_change").value = arr[2]
+            document.getElementById("change-emp-id").value = id_emp
+        }
+
+
     </script>
 {% endblock %}
 
@@ -29,9 +40,14 @@
         {% for employee in data_employee %}
             <li class="list-group-item d-flex justify-content-between align-items-center hover-mouse">
                 {{ employee }}
-                <button onclick="openDeleteModal({{ employee.id }}, '{{ employee }}')"
-                        class="btn btn-outline-danger btn-sm">Удалить
-                </button>
+                <div>
+                    <button onclick=" opeChangeEmpModal({{ employee.id }}, '{{ employee }}')"
+                            class="btn btn-outline-primary btn-sm" style="text-align: end">Редактировать
+                    </button>
+                    <button onclick="openDeleteModal({{ employee.id }}, '{{ employee }}')"
+                            class="btn btn-outline-danger btn-sm">Удалить
+                    </button>
+                </div>
             </li>
         {% endfor %}
     </ul>
@@ -86,8 +102,37 @@
                         <input hidden type="text" name="delete-emp-id" id="delete-emp-id">
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
                         <input type="submit" class="btn btn-outline-primary" value="Создать">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
+    <!-- Модальное окно для изменения сотрудника-->
 
+    <div class="modal fade" id="changeEmployeeModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Редактировать сотрудника</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" action="{% url 'change-employee' %}">
+                    {% csrf_token %}
+                    <div class="modal-body" id="modalBody">
+                        <input type="text" class="form-control" id="input_last_name_change"
+                               name="input_last_name_change" style="margin-top: 5px"/>
+                        <input type="text" class="form-control" id="input_first_name_change"
+                               name="input_first_name_change" style="margin-top: 5px"/>
+                        <input type="text" class="form-control" id="input_middle_name_change"
+                               name="input_middle_name_change" style="margin-top: 5px"/>
+
+                    </div>
+                    <div class="modal-footer">
+                        <input hidden type="text" name="change-emp-id" id="change-emp-id">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <input type="submit" class="btn btn-outline-primary" value="Изменить">
                     </div>
                 </form>
             </div>

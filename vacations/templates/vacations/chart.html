@@ -44,11 +44,12 @@
             var chartHeight = rowHeight + paddingHeight;
 
             var options = {
+                //backgroundColor: '#E4E4E4',
                 allowHtml: true,
                 height: chartHeight,
                 hAxis: {
                     minValue: new Date(line_year, 0, 1),
-                    maxValue: new Date(line_year+1, 0, 1),
+                    maxValue: new Date(line_year + 1, 0, 1),
                 },
                 tooltip: {
                     isHtml: true,
@@ -108,7 +109,6 @@
 
             google.visualization.events.addListener(chart, 'select', modalWindow);
 
-
             function drawTimelineChart() {
                 chart.draw(dataTable, options);
 
@@ -160,7 +160,8 @@
         </div>
         <div class="col">
             <div class="justify-content-end">
-                <h6 onclick="openAddModal()" class="text-5-book" style="text-align: end; text-transform: uppercase;">Добавить</h6>
+                <h6 onclick="openAddModal()" class="text-5-book" style="text-align: end; text-transform: uppercase;">
+                    Добавить</h6>
             </div>
         </div>
 
@@ -169,7 +170,6 @@
     <div>
         <div id="timelines" style="height: 100%;"></div>
     </div>
-
 
     <!-- Модальное окно для вывода данных по отпуску-->
     <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -273,5 +273,6 @@
             </div>
         </div>
     </div>
+
 
 {% endblock %}
