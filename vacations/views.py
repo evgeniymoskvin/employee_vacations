@@ -1,4 +1,6 @@
 import datetime
+import json
+
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -12,6 +14,7 @@ from .forms import AddVacationForm, AddEmployeeForm, LoginForm
 
 class IndexView(View):
     """Главная страница"""
+
     def get(self, request):
         form_login = LoginForm()
         content = {
@@ -77,6 +80,7 @@ class ChartView(View):
 
 class AddNewVacationView(View):
     """Добавления нового отпуска сотруднику"""
+
     def post(self, request):
         form = AddVacationForm(request.POST)
         if form.is_valid():
@@ -86,6 +90,7 @@ class AddNewVacationView(View):
 
 class ChangeEmployeeView(View):
     """Страница редактирования списка сотрудников"""
+
     def get(self, request):
         """Получение списка сотрудников"""
         form_add_employee = AddEmployeeForm()
@@ -104,6 +109,7 @@ class ChangeEmployeeView(View):
 
 class DeleteEmployeeView(View):
     """Удаление сотрудника"""
+
     def post(self, request):
         if request.POST.get('delete-emp-id'):
             delete_emp_id = int(request.POST.get('delete-emp-id'))
@@ -115,6 +121,7 @@ class DeleteEmployeeView(View):
 
 class ChangeNameEmployeeView(View):
     """Изменение ФИО сотрудника"""
+
     def post(self, request):
         if request.POST.get('change-emp-id'):
             change_emp_id = int(request.POST.get('change-emp-id'))
@@ -124,3 +131,28 @@ class ChangeNameEmployeeView(View):
             obj.middle_name = request.POST.get('input_middle_name_change')
             obj.save()
         return redirect(f'employees')
+
+
+class TestView(View):
+    """Добавления нового отпуска сотруднику"""
+
+    def get(self, request):
+        dt = 2023
+        data_all = VacationsModel.objects.filter(
+            Q(vacation_start__gte=f"{dt}-01-01") | Q(vacation_end__lte=f"{dt}-12-31")).filter(
+            vacation_start__lt=f"{dt + 1}-01-01").filter(vacation_end__gt=f"{dt - 1}-12-31")
+        # data_all = VacationsModel.objects.all()
+        dict_vac = {}
+        list_ = []
+        delta = datetime.timedelta(days=1)
+        for empl in data_all:
+            start_date = empl.vacation_start
+            end_date = empl.vacation_end
+            while (start_date <= end_date):
+                list_.append([f'{empl.employee.first_name} {empl.employee.last_name} {empl.employee.middle_name}',
+                              start_date.year, start_date.month, start_date.day])
+                start_date += delta
+
+        content = {"data_all": data_all,
+                   "json_data": json.dumps(list_, ensure_ascii=False)}
+        return render(request, 'vacations/test.html', content)

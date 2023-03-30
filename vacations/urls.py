@@ -27,5 +27,6 @@ urlpatterns = [
     path('change/employee/', views.ChangeNameEmployeeView.as_view(), name='change-employee'),
     path('modal-login', LoginView.as_view(), name='login-modal'),
     path('logout/', LogoutView.as_view(), name='logout'),
+    path('test/', views.TestView.as_view() , name='test'),
 
 ]

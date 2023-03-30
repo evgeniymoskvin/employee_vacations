@@ -1,61 +1,19 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'vacations/css/vacation.css' %}"/>
 
-<script src="https://www.gstatic.com/charts/loader.js"></script>
-<script type="text/javascript">
-    google.charts.load('current', {
-        packages: ['timeline']
-    }).then(function () {
-        var chart1 = new google.visualization.Timeline(document.getElementById('example3'));
-        var data1 = new google.visualization.DataTable();
+    <script src="{% static 'vacations/js/main-index.js' %}">
 
-        data1.addColumn({type: 'string', id: 'fracao'});
-        data1.addColumn({type: 'string', id: 'contrato'});
-        data1.addColumn({type: 'date', id: 'Start'});
-        data1.addColumn({type: 'date', id: 'End'});
-        data1.addColumn({type: 'string', role: 'tooltip', id: 'link', 'p': {'html': true}});
-        data1.addRows([
-            ['Torre 2 - E 10ºB', 'Serra Lopes, Cortes Martins & Associados', new Date(2018, 5, 01), new Date(2019, 4, 31), 'detalhe_fraccao.php?id=35'],
-            ['Torre 2 - E 10ºB', 'Serra Lopes, Cortes Martins & Associados', new Date(2007, 2, 01), new Date(2013, 4, 31), 'detalhe_fraccao.php?id=35'],
-            ['Torre 2 - E 10ºB', 'Serra Lopes, Cortes Martins & Associados', new Date(2017, 5, 01), new Date(2018, 4, 31), 'detalhe_fraccao.php?id=35']
-        ]);
-
-        var options1 = {
-            chartArea: {
-                left: 40,
-                width: '100%',
-            },
-            timeline: {
-                groupByRowLabel: true,
-                singleColor: 'green',
-                showRowLabels: true
-            },
-            width: '100%',
-            height: 600,
-        };
-
-        google.visualization.events.addListener(chart1, 'select', function () {
-            var selection = chart1.getSelection();
-            if (selection.length > 0) {
-                window.open(data1.getValue(selection[0].row, 4), '_blank');
-                console.log(data1.getValue(selection[0].row, 4));
-            }
-        });
-
-        function drawChart1() {
-            chart1.draw(data1, options1);
-        }
-
-        drawChart1();
-    });
-</script>
+    </script>
 
 </head>
 <body>
-
-<div id="example3"></div>
+<div id="calendar"></div>
+<div hidden id="json_data">{{ json_data }}</div>
 </body>
 </html>

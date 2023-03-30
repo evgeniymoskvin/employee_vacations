@@ -179,3 +179,45 @@
     scroll-behavior: smooth;
     animation: fade-in .4s ease;
 }
+
+
+
+table {
+    font-family: "p22_underground_cy_probook", serif;
+    clear: both;
+    width: 30%;
+    border: 1px solid #dcdcff;
+    border-radius: 3px;
+    border-collapse: collapse;
+    color: #444;
+}
+
+td {
+    font-family: "p22_underground_cy_probook", serif;
+    height: 48px;
+    text-align: center;
+    vertical-align: middle;
+    border-right: 1px solid #dcdcff;
+    border-top: 1px solid #dcdcff;
+    width: 14.28571429%;
+}
+
+td.not-current {
+    font-family: "p22_underground_cy_probook", serif;
+    color: #c0c0c0;
+}
+
+td.today {
+    font-family: "p22_underground_cy_probook", serif;
+    font-weight: 700;
+    color: #28283b;
+    font-size: 1.5em;
+}
+
+thead td {
+    font-family: "p22_underground_cy_probook", serif;
+    border: none;
+    color: #28283b;
+    text-transform: uppercase;
+    font-size: 1.5em;
+}

@@ -16,36 +16,63 @@
             var container = document.getElementById('timelines');
             var chart = new google.visualization.Timeline(container);
             var dataTable = new google.visualization.DataTable();
-            var line_year = {{ year }}
+            var line_year = {{ year }};
 
-                dataTable.addColumn({type: 'string', id: 'Name'});
+            dataTable.addColumn({type: 'string', id: 'Name'});
+            dataTable.addColumn({type: 'string', id: 'Description'});
             dataTable.addColumn({type: 'date', id: 'Start'});
             dataTable.addColumn({type: 'date', id: 'End'});
             dataTable.addColumn({type: 'string', role: 'tooltip', id: 'link', 'p': {'html': true}});
+            dataTable.addColumn({type: 'string', role: 'tooltip', id: 'status', 'p': {'html': true}});
             //dataTable.addRows([
             //    ['Сотрудник 1', new Date(2023, 0, 1), new Date(2023, 0, 25), 'test'],
             //    ['Сотрудник 1', new Date(2023, 3, 30), new Date(2023, 3, 31), 'test'],
             //]);
+            dataTable.addRows([['\0', 'Сегодня', new Date(), new Date(), 'test', 'test2status']]);
             {% for employee in data %}
                 dataTable.addRows([
-                    ['{{employee.employee}}',
+                    ['{{employee.employee}}', '',
                         new Date({{ employee.vacation_start.year }}, ({{ employee.vacation_start.month}}-1), {{ employee.vacation_start.day }}),
                         new Date({{ employee.vacation_end.year }}, ({{ employee.vacation_end.month }}-1), {{ employee.vacation_end.day }}),
-                        '{{ employee.id }}'
+                        '{{ employee.id }}', 'CategoryA'
                     ]
                 ]);
             {% endfor %}
 
-            // set a padding value to cover the height of title and axis values
+            //dataTable.addRows([
+            //    ['Сотрудник 1', '', new Date(2023, 0, 1), new Date(2023, 0, 25), 'test', 'CategoryC'],
+            //    ['Сотрудник 1', '', new Date(2023, 3, 30), new Date(2023, 3, 31), 'test', 'CategoryC'],
+            //]);
+
+            console.log(dataTable.getFormattedValue(0, 1))
+            console.log(dataTable.getProperties(0, 1))
+            dataTable.setRowProperty(1, 'style', 'border: 1px solid green')
+
+
+// set a padding value to cover the height of title and axis values
             var paddingHeight = 40;
 // set the height to be covered by the rows
             var rowHeight = dataTable.getNumberOfRows() * 50;
 // set the total chart height
             var chartHeight = rowHeight + paddingHeight;
 
+            var colors = [];
+            var colorMap = {
+                // should contain a map of category -> color for every category
+                CategoryA: '#e63b6f',
+                CategoryB: '#19c362',
+                CategoryC: '#592df7'
+            }
+
+            for (var i = 1; i < dataTable.getNumberOfRows(); i++) {
+                colors.push(colorMap[dataTable.getValue(i, 5)]);
+            }
+            console.log(colors)
+
             var options = {
                 //backgroundColor: '#E4E4E4',
                 allowHtml: true,
+                //colors: colors,
                 height: chartHeight,
                 hAxis: {
                     minValue: new Date(line_year, 0, 1),
@@ -56,13 +83,14 @@
                     trigger: 'selection'
                 },
 
+
             };
 
             function modalWindow() {
                 var selection = chart.getSelection();
                 if (selection.length > 0) {
 
-                    var start_vacation_date = dataTable.getValue(selection[0].row, 1);
+                    var start_vacation_date = dataTable.getValue(selection[0].row, 2);
 
                     var start_day = start_vacation_date.getDate(),
                         start_month = Number(start_vacation_date.getMonth() + 1),
@@ -72,7 +100,7 @@
                     start_day = (start_day < 10 ? "0" : "") + start_day;
                     var start_to_calendar = start_year + "-" + start_month + "-" + start_day;
 
-                    var end_vacation_date = dataTable.getValue(selection[0].row, 2);
+                    var end_vacation_date = dataTable.getValue(selection[0].row, 3);
 
                     var end_day = end_vacation_date.getDate(),
                         end_month = Number(end_vacation_date.getMonth() + 1),
@@ -112,35 +140,83 @@
             function drawTimelineChart() {
                 chart.draw(dataTable, options);
 
+                nowLine('timelines');
+                google.visualization.events.addListener(chart, 'onmouseover', function (obj) {
+                    nowLine('timelines');
+                })
+
+                google.visualization.events.addListener(chart, 'onmouseout', function (obj) {
+                    nowLine('timelines')
+                });
+
                 for (let year = 2022; year <= 2035; year++) {
                     let options = document.createElement("OPTION");
                     document.getElementById("year").appendChild(options).innerHTML = year;
                 }
             }
 
-            drawTimelineChart();
+            function nowLine(div) {
+                var abc = parseFloat($('#' + div + '  text:contains("Сегодня")').attr('x'));
+                {#$('#' + div + ' rect').each(function (index) {#}
+                {#    var x = parseFloat($(this).attr('x'));#}
+                {#    if (x < abc && x > 0) {#}
+                {#        $(this).attr('fill', '#026E81')#}
+                {#    }#}
+                {#    if (x > abc && x > 0) {#}
+                {#        $(this).attr('fill', '#A8B545')#}
+                {#    }#}
+                {#})#}
 
-        }
+                    var height;
+                    $('#' + div + ' rect').each(function (index) {
+                        var x = parseFloat($(this).attr('x'));
+                        var y = parseFloat($(this).attr('y'));
 
-        function textToInput() {
-            $('#detailsModal').modal('hide');
-            $('#editModal').modal('show');
-            document.getElementById("change-id").value = document.getElementById("delete-id").value
-            console.log(document.getElementById("change-id").value)
-        }
 
-        function showSelectYear() {
-            if (document.getElementById("select-area").style.display === 'none') {
-                document.getElementById("select-area").style.display = 'block';
-            } else {
-                document.getElementById("select-area").style.display = 'none'
+                        if (x == 0 && y == 0) {
+                            height = parseFloat($(this).attr('height'))
+
+                        }
+                    })
+                    var nowWord = $('#' + div + ' text:contains("Сегодня")');
+
+                    $('#' + div + '  text:contains("Сегодня")').each(function (idx, value) {
+                        if (idx == 0) {
+                            $(value).parent().find("rect").first().removeAttr("style");
+                        } else if (idx == 1) {
+                            $(value).parent().find("rect").first().attr("style", "display:none;");
+                        }
+
+                    });
+
+                    nowWord.prev().first().attr('height', height + 'px').attr('width', '2px').attr('y', '0').attr('fill', 'red');
+                    nowWord.attr('display', 'none')
+                }
+
+                drawTimelineChart();
+
+
             }
 
-        }
+            function textToInput() {
+                $('#detailsModal').modal('hide');
+                $('#editModal').modal('show');
+                document.getElementById("change-id").value = document.getElementById("delete-id").value
+                console.log(document.getElementById("change-id").value)
+            }
 
-        function openAddModal() {
-            $('#addModal').modal('show');
-        }
+            function showSelectYear() {
+                if (document.getElementById("select-area").style.display === 'none') {
+                    document.getElementById("select-area").style.display = 'block';
+                } else {
+                    document.getElementById("select-area").style.display = 'none'
+                }
+
+            }
+
+            function openAddModal() {
+                $('#addModal').modal('show');
+            }
 
 
     </script>
