@@ -157,15 +157,15 @@
 
             function nowLine(div) {
                 var abc = parseFloat($('#' + div + '  text:contains("Сегодня")').attr('x'));
-                {#$('#' + div + ' rect').each(function (index) {#}
-                {#    var x = parseFloat($(this).attr('x'));#}
-                {#    if (x < abc && x > 0) {#}
-                {#        $(this).attr('fill', '#026E81')#}
-                {#    }#}
-                {#    if (x > abc && x > 0) {#}
-                {#        $(this).attr('fill', '#A8B545')#}
-                {#    }#}
-                {#})#}
+                //$('#' + div + ' rect').each(function (index) {
+                //    var x = parseFloat($(this).attr('x'));
+                //    if (x < abc && x > 0) {
+                //        $(this).attr('fill', '#026E81')
+                //    }
+                //    if (x > abc && x > 0) {
+                //        $(this).attr('fill', '#A8B545')
+                //    }
+                // })
 
                     var height;
                     $('#' + div + ' rect').each(function (index) {
@@ -180,17 +180,17 @@
                     })
                     var nowWord = $('#' + div + ' text:contains("Сегодня")');
 
-                    $('#' + div + '  text:contains("Сегодня")').each(function (idx, value) {
-                        if (idx == 0) {
-                            $(value).parent().find("rect").first().removeAttr("style");
-                        } else if (idx == 1) {
-                            $(value).parent().find("rect").first().attr("style", "display:none;");
-                        }
+                    //$('#' + div + '  text:contains("Сегодня")').each(function (idx, value) {
+                      //  if (idx == 0) {
+                        //    $(value).parent().find("rect").first().removeAttr("style");
+                        //} else if (idx == 1) {
+                        //    $(value).parent().find("rect").first().attr("style", "display:none;");
+                        //}
 
-                    });
+                    //});
 
                     nowWord.prev().first().attr('height', height + 'px').attr('width', '2px').attr('y', '0').attr('fill', 'red');
-                    nowWord.attr('display', 'none')
+                    //nowWord.attr('display', 'none')
                 }
 
                 drawTimelineChart();

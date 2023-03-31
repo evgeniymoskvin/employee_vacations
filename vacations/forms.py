@@ -1,5 +1,5 @@
 from .models import VacationsModel, EmployeeModel
-from django.forms import ModelForm, Select, SelectDateWidget, DateInput, TextInput, CharField, PasswordInput
+from django.forms import ModelForm, Select, NumberInput, DateInput, TextInput, CharField, PasswordInput
 from django.contrib.auth.forms import AuthenticationForm, UsernameField, UserCreationForm
 from django.contrib.admin.widgets import AdminDateWidget
 
@@ -11,12 +11,17 @@ class DateInputCustom(DateInput):
 class AddVacationForm(ModelForm):
     class Meta:
         model = VacationsModel
-        fields = '__all__'
+        exclude = [
+            'vacation_end'
+        ]
 
         widgets = {"employee": Select(attrs={"class": "form-select",
                                              "aria-label": "Сотрудник"}),
                    "vacation_start": DateInputCustom(attrs={"class": "form-control"}),
-                   "vacation_end": DateInputCustom(attrs={"class": "form-control"}),
+                   "day_count": NumberInput(attrs={"class": "form-control",
+                                                   "aria-label": "Количество дней"}),
+                   "vacation_type": Select(attrs={"class": "form-select",
+                                                  "aria-label": "Вид отпуска"}),
 
                    }
 
@@ -32,10 +37,10 @@ class AddEmployeeForm(ModelForm):
                                            'placeholder': 'Имя'}),
             "middle_name": TextInput(attrs={"class": "form-control",
                                             "aria-label": "Здание",
-                                           'placeholder': 'Отчество'}),
+                                            'placeholder': 'Отчество'}),
             "last_name": TextInput(attrs={"class": "form-control",
                                           "aria-label": "Здание",
-                                           'placeholder': 'Фамилия'})
+                                          'placeholder': 'Фамилия'})
 
         }
 
@@ -43,7 +48,8 @@ class AddEmployeeForm(ModelForm):
 class LoginForm(AuthenticationForm):
     username = UsernameField(
         widget=TextInput(
-            attrs={"autofocus": True, "class": "form-control", 'id': 'floatingInput', 'placeholder': 'Имя пользователя'}))
+            attrs={"autofocus": True, "class": "form-control", 'id': 'floatingInput',
+                   'placeholder': 'Имя пользователя'}))
     password = CharField(
         label=("Password"),
         strip=False,
