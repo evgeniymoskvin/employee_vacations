@@ -91,6 +91,7 @@ class EmployeeModel(models.Model):
     email_user = models.EmailField(verbose_name="Email", null=True, blank=True)
     show_employee = models.BooleanField(verbose_name="Отображать сотрудника", default=True)
     days_remaining = models.IntegerField(verbose_name="Количество неиспользованных дней", default=0)
+    # show_year = models.IntegerField(verbose_name="Отображаемый год", default=datetime.datetime.today().year)
 
 
     def __str__(self):

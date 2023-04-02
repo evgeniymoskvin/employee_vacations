@@ -1,5 +1,5 @@
 from .models import VacationsModel, EmployeeModel
-from django.forms import ModelForm, Select, NumberInput, DateInput, TextInput, CharField, PasswordInput
+from django.forms import ModelForm, Select, NumberInput, DateInput, TextInput, CharField, PasswordInput, EmailInput
 from django.contrib.auth.forms import AuthenticationForm, UsernameField, UserCreationForm
 from django.contrib.admin.widgets import AdminDateWidget
 
@@ -17,6 +17,7 @@ class AddVacationForm(ModelForm):
 
         widgets = {"employee": Select(attrs={"class": "form-select",
                                              "aria-label": "Сотрудник"}),
+
                    "vacation_start": DateInputCustom(attrs={"class": "form-control"}),
                    "day_count": NumberInput(attrs={"class": "form-control",
                                                    "aria-label": "Количество дней"}),
@@ -29,7 +30,13 @@ class AddVacationForm(ModelForm):
 class AddEmployeeForm(ModelForm):
     class Meta:
         model = EmployeeModel
-        fields = "__all__"
+        exclude = [
+            'user',
+            'show_employee',
+            'command_number_user',
+            'department_user',
+
+        ]
 
         widgets = {
             "first_name": TextInput(attrs={"class": "form-control",
@@ -40,7 +47,20 @@ class AddEmployeeForm(ModelForm):
                                             'placeholder': 'Отчество'}),
             "last_name": TextInput(attrs={"class": "form-control",
                                           "aria-label": "Здание",
-                                          'placeholder': 'Фамилия'})
+                                          'placeholder': 'Фамилия'}),
+            "personnel_number": TextInput(attrs={"class": "form-control",
+                                            "aria-label": "Здание",
+                                            'placeholder': 'Табельный номер'}),
+            "email_user": EmailInput(attrs={"class": "form-control",
+                                            "aria-label": "Здание",
+                                            'placeholder': 'email'}),
+            "days_remaining": TextInput(attrs={"class": "form-control",
+                                            "aria-label": "Здание",
+                                            'placeholder': 'Количество дней'}),
+            "department_user": Select(attrs={"class": "form-select",
+                                                  "aria-label": "Управление"}),
+            "command_number_user": Select(attrs={"class": "form-select",
+                                             "aria-label": "Отдел"}),
 
         }
 

@@ -234,12 +234,15 @@
                 <h2 class="text-1-year">{{ year }}</h2>
             </div>
         </div>
+
+        {% if flag_add_vacation == True %}
         <div class="col">
             <div class="justify-content-end">
                 <h6 onclick="openAddModal()" class="text-5-book" style="text-align: end; text-transform: uppercase;">
                     Добавить</h6>
             </div>
         </div>
+        {% endif %}
 
     </div>
 
@@ -265,9 +268,11 @@
                     </div>
                     <div class="modal-footer">
                         <input hidden type="text" name="delete-id" id="delete-id">
+                        {% if flag_add_vacation == True %}
                         <input type="submit" class="btn btn-outline-danger" value="Удалить">
                         <button onclick="textToInput()" type="button" class="btn btn-outline-primary">Редактировать
                         </button>
+                        {% endif %}
                         <button type="button" class="btn btn-success" data-bs-dismiss="modal">Закрыть</button>
 
                     </div>
@@ -277,7 +282,7 @@
     </div>
 
     <!-- Модальное окно для редактирования данных по отпуску-->
-
+    {% if flag_add_vacation == True %}
     <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -300,6 +305,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
 
     <!-- Модальное окно выбор года-->
@@ -328,7 +334,7 @@
     </div>
 
     <!-- Модальное окно для добавления данных по отпуску-->
-
+    {% if flag_add_vacation == True %}
     <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -349,6 +355,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
 
 {% endblock %}

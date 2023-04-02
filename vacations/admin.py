@@ -18,6 +18,10 @@ class WritePermissionAdmin(admin.ModelAdmin):
     ordering = ["id"]
 
 
+class EmployeeAccessWriteAdmin(admin.ModelAdmin):
+    ordering = ["employee"]
+
+
 admin.site.register(EmployeeModel, EmployeeAdmin)
 admin.site.register(VacationsModel)
 admin.site.register(VacationTypeModel)
@@ -26,4 +30,4 @@ admin.site.register(CommandNumberModel, CommandNumberAdmin)
 admin.site.register(AccessLevelModel, AccessLevelAdmin)
 admin.site.register(WritePermissionModel, WritePermissionAdmin)
 admin.site.register(JobTitleModel)
-admin.site.register(EmployeeAccessWriteModel)
+admin.site.register(EmployeeAccessWriteModel, EmployeeAccessWriteAdmin)
