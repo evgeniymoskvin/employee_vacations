@@ -34,15 +34,10 @@
                     ['{{employee.employee}}', '',
                         new Date({{ employee.vacation_start.year }}, ({{ employee.vacation_start.month}}-1), {{ employee.vacation_start.day }}),
                         new Date({{ employee.vacation_end.year }}, ({{ employee.vacation_end.month }}-1), {{ employee.vacation_end.day }}),
-                        '{{ employee.id }}', 'CategoryA'
+                        '{{ employee.id }}', "{% cycle 'CategoryA' 'CategoryB' 'CategoryC' %}"
                     ]
                 ]);
             {% endfor %}
-
-            //dataTable.addRows([
-            //    ['Сотрудник 1', '', new Date(2023, 0, 1), new Date(2023, 0, 25), 'test', 'CategoryC'],
-            //    ['Сотрудник 1', '', new Date(2023, 3, 30), new Date(2023, 3, 31), 'test', 'CategoryC'],
-            //]);
 
             console.log(dataTable.getFormattedValue(0, 1))
             console.log(dataTable.getProperties(0, 1))
@@ -59,9 +54,9 @@
             var colors = [];
             var colorMap = {
                 // should contain a map of category -> color for every category
-                CategoryA: '#e63b6f',
-                CategoryB: '#19c362',
-                CategoryC: '#592df7'
+                CategoryA: '#F23030',
+                CategoryB: '#F29F05',
+                CategoryC: '#267365'
             }
 
             for (var i = 1; i < dataTable.getNumberOfRows(); i++) {
@@ -72,7 +67,7 @@
             var options = {
                 //backgroundColor: '#E4E4E4',
                 allowHtml: true,
-                //colors: colors,
+                colors: colors,
                 height: chartHeight,
                 hAxis: {
                     minValue: new Date(line_year, 0, 1),
@@ -114,6 +109,7 @@
                     document.getElementById("detailsModalLabel").innerText = dataTable.getValue(selection[0].row, 0);
                     document.getElementById("start_date").innerText = (start_day + "." + start_month + "." + start_year);
                     document.getElementById("end_date").innerText = (end_day + "." + end_month + "." + end_year);
+                    document.getElementById("id_vacation").innerText = dataTable.getValue(selection[0].row, 4)
 
                     document.getElementById("count_days").innerText =
                         (Math.round((end_vacation_date - start_vacation_date) / (1000 * 60 * 60 * 24) + 1));
@@ -157,66 +153,57 @@
 
             function nowLine(div) {
                 var abc = parseFloat($('#' + div + '  text:contains("Сегодня")').attr('x'));
-                //$('#' + div + ' rect').each(function (index) {
-                //    var x = parseFloat($(this).attr('x'));
-                //    if (x < abc && x > 0) {
-                //        $(this).attr('fill', '#026E81')
-                //    }
-                //    if (x > abc && x > 0) {
-                //        $(this).attr('fill', '#A8B545')
-                //    }
-                // })
 
-                    var height;
-                    $('#' + div + ' rect').each(function (index) {
-                        var x = parseFloat($(this).attr('x'));
-                        var y = parseFloat($(this).attr('y'));
+                var height;
+                $('#' + div + ' rect').each(function (index) {
+                    var x = parseFloat($(this).attr('x'));
+                    var y = parseFloat($(this).attr('y'));
 
 
-                        if (x == 0 && y == 0) {
-                            height = parseFloat($(this).attr('height'))
+                    if (x == 0 && y == 0) {
+                        height = parseFloat($(this).attr('height'))
 
-                        }
-                    })
-                    var nowWord = $('#' + div + ' text:contains("Сегодня")');
+                    }
+                })
+                var nowWord = $('#' + div + ' text:contains("Сегодня")');
 
-                    //$('#' + div + '  text:contains("Сегодня")').each(function (idx, value) {
-                      //  if (idx == 0) {
-                        //    $(value).parent().find("rect").first().removeAttr("style");
-                        //} else if (idx == 1) {
-                        //    $(value).parent().find("rect").first().attr("style", "display:none;");
-                        //}
+                //$('#' + div + '  text:contains("Сегодня")').each(function (idx, value) {
+                //  if (idx == 0) {
+                //    $(value).parent().find("rect").first().removeAttr("style");
+                //} else if (idx == 1) {
+                //    $(value).parent().find("rect").first().attr("style", "display:none;");
+                //}
 
-                    //});
+                //});
 
-                    nowWord.prev().first().attr('height', height + 'px').attr('width', '2px').attr('y', '0').attr('fill', 'red');
-                    //nowWord.attr('display', 'none')
-                }
-
-                drawTimelineChart();
-
-
+                nowWord.prev().first().attr('height', height + 'px').attr('width', '2px').attr('y', '0').attr('fill', 'red');
+                //nowWord.attr('display', 'none')
             }
 
-            function textToInput() {
-                $('#detailsModal').modal('hide');
-                $('#editModal').modal('show');
-                document.getElementById("change-id").value = document.getElementById("delete-id").value
-                console.log(document.getElementById("change-id").value)
-            }
+            drawTimelineChart();
 
-            function showSelectYear() {
-                if (document.getElementById("select-area").style.display === 'none') {
-                    document.getElementById("select-area").style.display = 'block';
-                } else {
-                    document.getElementById("select-area").style.display = 'none'
-                }
 
-            }
+        }
 
-            function openAddModal() {
-                $('#addModal').modal('show');
+        function textToInput() {
+            $('#detailsModal').modal('hide');
+            $('#editModal').modal('show');
+            document.getElementById("change-id").value = document.getElementById("delete-id").value
+            console.log(document.getElementById("change-id").value)
+        }
+
+        function showFiltersModal() {
+            for (let year_form = 2022; year_form <= 2030; year_form++) {
+                let options = document.createElement("OPTION");
+                document.getElementById("year_form").appendChild(options).innerHTML = year_form;
+                document.getElementById("year_form").appendChild(options).value = year_form;
             }
+            $('#filtersModal').modal('show');
+        }
+
+        function openAddModal() {
+            $('#addModal').modal('show');
+        }
 
 
     </script>
@@ -231,20 +218,30 @@
         <div class="col-10">
             <div style="margin-top: 15px; margin-bottom: 20px">
                 <h2 class="text-1" style="text-transform: uppercase;"> График отпусков</h2>
-                <h2 class="text-1-year">{{ year }}</h2>
+                <h2 class="text-1-year" onclick="showFiltersModal()">{{ year }}</h2>
             </div>
         </div>
 
         {% if flag_add_vacation == True %}
-        <div class="col">
-            <div class="justify-content-end">
-                <h6 onclick="openAddModal()" class="text-5-book" style="text-align: end; text-transform: uppercase;">
-                    Добавить</h6>
+            <div class="col">
+                <div class="justify-content-end">
+                    <h6 onclick="openAddModal()" class="text-5-book"
+                        style="text-align: end; text-transform: uppercase;">
+                        Добавить</h6>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    {% if permission == 1 or permission == 2 %}
+    <div class="row">
+        <div class="col-10">
+            <div style="margin-bottom: 20px">
+                <h6 onclick="showFiltersModal()" class="text-5-book"
+                    style="text-transform: uppercase; text-align: start; margin-top: 0px">Настроить фильтры ⧩</h6>
             </div>
         </div>
-        {% endif %}
-
     </div>
+    {% endif %}
 
     <div>
         <div id="timelines" style="height: 100%;"></div>
@@ -255,7 +252,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5">Детали записи</h1>
+                    <h1 class="modal-title fs-5" style="display: inline">Детали записи</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form method="post">
@@ -265,13 +262,14 @@
                         <a>Дата начала отпуска: <p class="text-2" id="start_date"></p></a>
                         <a>Дата окончания отпуска: <p class="text-2" id="end_date"></p></a>
                         <a>Количество дней: <p class="text-2" id="count_days"></p></a>
+                        <p class="text-index-book" style="display: inline; font-size: 12px;">id записи:</p><p id="id_vacation" style="display: inline; font-size: 12px;"></p>
                     </div>
                     <div class="modal-footer">
                         <input hidden type="text" name="delete-id" id="delete-id">
                         {% if flag_add_vacation == True %}
-                        <input type="submit" class="btn btn-outline-danger" value="Удалить">
-                        <button onclick="textToInput()" type="button" class="btn btn-outline-primary">Редактировать
-                        </button>
+                            <input type="submit" class="btn btn-outline-danger" value="Удалить">
+                            <button onclick="textToInput()" type="button" class="btn btn-outline-primary">Редактировать
+                            </button>
                         {% endif %}
                         <button type="button" class="btn btn-success" data-bs-dismiss="modal">Закрыть</button>
 
@@ -282,7 +280,7 @@
     </div>
 
     <!-- Модальное окно для редактирования данных по отпуску-->
-    {% if flag_add_vacation == True %}
+
     <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -293,8 +291,10 @@
                 <form method="post">
                     {% csrf_token %}
                     <div class="modal-body" id="modalBody">
-                        <p>Дата начала отпуска: <input type="date" id="input-date-start" name="input-date-start"/></p>
-                        <p>Дата окончания отпуска: <input type="date" id="input-date-end" name="input-date-end"/></p>
+                        <p>Дата начала отпуска: <input type="date" id="input-date-start" name="input-date-start"/>
+                        </p>
+                        <p>Дата окончания отпуска: <input type="date" id="input-date-end" name="input-date-end"/>
+                        </p>
                     </div>
                     <div class="modal-footer">
                         <input hidden type="text" name="change-id" id="change-id">
@@ -305,27 +305,67 @@
             </div>
         </div>
     </div>
+
+
+
+    <!-- Модальное окно для добавления данных по отпуску-->
+    {% if flag_add_vacation == True %}
+        <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5">Добавить запись</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form method="post" action="{% url 'add-vacation' %}">
+                        {% csrf_token %}
+                        <div class="modal-body" id="modalBody">
+                            {{ form }}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена
+                            </button>
+                            <input type="submit" class="btn btn-outline-primary" value="Создать">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     {% endif %}
 
 
-    <!-- Модальное окно выбор года-->
+    <!-- Модальное окно фильтров-->
 
-    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="filtersModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5">Редактирование записи</h1>
+                    <h1 class="modal-title fs-5">Фильтрация записей</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form method="post">
+                <form method="post" action="{% url 'user-filter' %}">
                     {% csrf_token %}
                     <div class="modal-body" id="modalBody">
-                        <p>Дата начала отпуска: <input type="date" id="input-date-start" name="input-date-start"/></p>
-                        <p>Дата окончания отпуска: <input type="date" id="input-date-end" name="input-date-end"/></p>
+                        <p class="text-3" style="text-transform: uppercase; margin-bottom: 0px">Год:</p>
+                        <select class="form-select" name='year' id="year_form">
+                            <option value style="display:none">Выбрать год</option>
+                        </select>
+
+                        {% if permission == 1%}
+                        <p class="text-3" style="text-transform: uppercase; margin-bottom: 0px">Управление</p>
+                        {{ filter_form.department_filter }}
+                        {% endif %}
+                        {% if permission == 1 or permission == 2 %}
+                        <p class="text-3" style="text-transform: uppercase; margin-bottom: 0px; text-align: center">Или</p>
+                        <p class="text-3" style="text-transform: uppercase; margin-bottom: 0px">Отдел</p>
+                        {{ filter_form.command_number_filter }}
+                        {% endif %}
                     </div>
                     <div class="modal-footer">
-                        <input hidden type="text" name="change-id" id="change-id">
-                        <input type="submit" class="btn btn-outline-warning" value="Изменить">
+                        <button type="button" class="btn btn-outline-danger"
+                                onclick="location.href='{% url "user-filter-clear" %}'">Сбросить
+                        </button>
+                        <input type="submit" class="btn btn-outline-success" value="Фильтровать">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
                     </div>
                 </form>
@@ -333,29 +373,6 @@
         </div>
     </div>
 
-    <!-- Модальное окно для добавления данных по отпуску-->
-    {% if flag_add_vacation == True %}
-    <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5">Добавить запись</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form method="post" action="{% url 'add-vacation' %}">
-                    {% csrf_token %}
-                    <div class="modal-body" id="modalBody">
-                        {{ form }}
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
-                        <input type="submit" class="btn btn-outline-primary" value="Создать">
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    {% endif %}
 
 
 {% endblock %}

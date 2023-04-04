@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import EmployeeModel, VacationsModel, VacationTypeModel, DepartmentModel, CommandNumberModel, \
-    AccessLevelModel, WritePermissionModel, JobTitleModel, EmployeeAccessWriteModel
+    AccessLevelModel, WritePermissionModel, JobTitleModel, EmployeeAccessWriteModel, YearModel
 
 # Register your models here.
 
@@ -21,6 +21,8 @@ class WritePermissionAdmin(admin.ModelAdmin):
 class EmployeeAccessWriteAdmin(admin.ModelAdmin):
     ordering = ["employee"]
 
+class YearAdmin(admin.ModelAdmin):
+    ordering = ["year"]
 
 admin.site.register(EmployeeModel, EmployeeAdmin)
 admin.site.register(VacationsModel)
@@ -31,3 +33,4 @@ admin.site.register(AccessLevelModel, AccessLevelAdmin)
 admin.site.register(WritePermissionModel, WritePermissionAdmin)
 admin.site.register(JobTitleModel)
 admin.site.register(EmployeeAccessWriteModel, EmployeeAccessWriteAdmin)
+admin.site.register(YearModel, YearAdmin)

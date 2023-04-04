@@ -36,6 +36,8 @@ class CommandNumberModel(models.Model):
     """Номера отделов"""
     command_number = models.IntegerField("Номер отдела/Сокращение")
     command_name = models.CharField("Наименование отдела", max_length=150)
+    department = models.ForeignKey(DepartmentModel, verbose_name="Управление", on_delete=models.SET_NULL, null=True,
+                                   blank=True)
 
     def __str__(self):
         return f'{self.command_number}, {self.command_name}'
@@ -69,6 +71,7 @@ class AccessLevelModel(models.Model):
         verbose_name = _("уровень доступа")
         verbose_name_plural = _("уровни доступа")
 
+
 class WritePermissionModel(models.Model):
     """Право записи"""
     write_permission = models.CharField("Наименования права записи", max_length=25)
@@ -80,7 +83,9 @@ class WritePermissionModel(models.Model):
         verbose_name = _("право записи")
         verbose_name_plural = _("права записи")
 
+
 class EmployeeModel(models.Model):
+    """Таблица сотрудников"""
     user = models.OneToOneField(User, models.PROTECT, verbose_name="Login", null=True, blank=True)
     personnel_number = models.CharField("Табельный номер", max_length=20, null=True)
     last_name = models.CharField("Фамилия", max_length=150)
@@ -91,8 +96,8 @@ class EmployeeModel(models.Model):
     email_user = models.EmailField(verbose_name="Email", null=True, blank=True)
     show_employee = models.BooleanField(verbose_name="Отображать сотрудника", default=True)
     days_remaining = models.IntegerField(verbose_name="Количество неиспользованных дней", default=0)
-    # show_year = models.IntegerField(verbose_name="Отображаемый год", default=datetime.datetime.today().year)
 
+    # show_year = models.IntegerField(verbose_name="Отображаемый год", default=datetime.datetime.today().year)
 
     def __str__(self):
         return f'{self.last_name} {self.first_name} {self.middle_name}'
@@ -103,12 +108,12 @@ class EmployeeModel(models.Model):
 
 
 class VacationsModel(models.Model):
+    """Таблица отпусков"""
     employee = models.ForeignKey(EmployeeModel, on_delete=models.PROTECT, verbose_name="Сотрудник")
     vacation_start = models.DateField(verbose_name="Начало отпуска")
     day_count = models.IntegerField(verbose_name="Количество дней", null=True)
     vacation_end = models.DateField(verbose_name="Окончание отпуска", null=True, blank=True)
     vacation_type = models.ForeignKey(VacationTypeModel, on_delete=models.PROTECT, null=True)
-
 
     def __str__(self):
         return f'{self.employee}: {self.vacation_start} {self.vacation_end} '
@@ -118,12 +123,13 @@ class VacationsModel(models.Model):
         verbose_name_plural = _("отпуска")
 
     def save(self, *args, **kwargs):
-        self.vacation_end = self.vacation_start + datetime.timedelta(days=(self.day_count-1))
+        self.vacation_end = self.vacation_start + datetime.timedelta(days=(self.day_count - 1))
         super(VacationsModel, self).save(*args, **kwargs)
 
 
 class EmployeeAccessWriteModel(models.Model):
-    employee = models.ForeignKey(EmployeeModel, on_delete=models.CASCADE, verbose_name="Сотрудник")
+    """Таблица прав доступа и записи каждого сотрудника"""
+    employee = models.OneToOneField(EmployeeModel, on_delete=models.CASCADE, verbose_name="Сотрудник")
     access_level = models.ForeignKey(AccessLevelModel, on_delete=models.SET_NULL, null=True, verbose_name="Вид доступа")
     write_permission = models.BooleanField(verbose_name="Право записи", default=False)
 
@@ -133,3 +139,33 @@ class EmployeeAccessWriteModel(models.Model):
     class Meta:
         verbose_name = _("право сотрудника")
         verbose_name_plural = _("права сотрудников")
+
+
+class UserFilterModel(models.Model):
+    """Таблица фильтрации записей для каждого пользователя"""
+    employee = models.OneToOneField(EmployeeModel, on_delete=models.CASCADE, verbose_name="Сотрудник")
+    year_filter = models.IntegerField(verbose_name="Год", blank=True, null=True)
+    department_filter = models.ForeignKey(DepartmentModel, verbose_name="Управление", blank=True, null=True,
+                                          on_delete=models.CASCADE)
+    command_number_filter = models.ForeignKey(CommandNumberModel, verbose_name="Отдел", blank=True, null=True,
+                                              on_delete=models.CASCADE)
+    use_department_filter = models.BooleanField(verbose_name="Фильтр управления включен", blank=True, default=False)
+    use_command_number_filter = models.BooleanField(verbose_name="Фильтр управления включен", blank=True, default=False)
+
+    def __str__(self):
+        return f'{self.employee}. Фильтры: {self.year_filter}, {self.department_filter}, {self.command_number_filter}'
+
+    class Meta:
+        verbose_name = _("фильтр сотрудника")
+        verbose_name_plural = _("фильтры сотрудников")
+
+class YearModel(models.Model):
+    """Таблица годов для выпадающего списка"""
+    year = models.IntegerField(verbose_name="год")
+
+    def __str__(self):
+        return f'{self.year}'
+
+    class Meta:
+        verbose_name = _("год")
+        verbose_name_plural = _("года")

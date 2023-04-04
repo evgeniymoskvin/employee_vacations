@@ -28,5 +28,7 @@ urlpatterns = [
     path('modal-login', LoginView.as_view(), name='login-modal'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('test/', views.TestView.as_view() , name='test'),
+    path('user/filters/', views.UserFilterView.as_view(), name='user-filter'),
+    path('user/filters/clear', views.ClearFilterView.as_view(), name='user-filter-clear')
 
 ]

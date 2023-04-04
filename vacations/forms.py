@@ -1,4 +1,4 @@
-from .models import VacationsModel, EmployeeModel
+from .models import VacationsModel, EmployeeModel, UserFilterModel, YearModel
 from django.forms import ModelForm, Select, NumberInput, DateInput, TextInput, CharField, PasswordInput, EmailInput
 from django.contrib.auth.forms import AuthenticationForm, UsernameField, UserCreationForm
 from django.contrib.admin.widgets import AdminDateWidget
@@ -49,18 +49,18 @@ class AddEmployeeForm(ModelForm):
                                           "aria-label": "Здание",
                                           'placeholder': 'Фамилия'}),
             "personnel_number": TextInput(attrs={"class": "form-control",
-                                            "aria-label": "Здание",
-                                            'placeholder': 'Табельный номер'}),
+                                                 "aria-label": "Здание",
+                                                 'placeholder': 'Табельный номер'}),
             "email_user": EmailInput(attrs={"class": "form-control",
                                             "aria-label": "Здание",
                                             'placeholder': 'email'}),
             "days_remaining": TextInput(attrs={"class": "form-control",
-                                            "aria-label": "Здание",
-                                            'placeholder': 'Количество дней'}),
+                                               "aria-label": "Здание",
+                                               'placeholder': 'Количество дней'}),
             "department_user": Select(attrs={"class": "form-select",
-                                                  "aria-label": "Управление"}),
+                                             "aria-label": "Управление"}),
             "command_number_user": Select(attrs={"class": "form-select",
-                                             "aria-label": "Отдел"}),
+                                                 "aria-label": "Отдел"}),
 
         }
 
@@ -77,3 +77,30 @@ class LoginForm(AuthenticationForm):
             attrs={"autocomplete": "current-password", "class": "form-control", 'id': 'floatingPassword',
                    'placeholder': 'Пароль'}),
     )
+
+
+class FilterForm(ModelForm):
+    class Meta:
+        model = UserFilterModel
+        exclude = [
+            "employee",
+            "year_filter",
+            "use_department_filter",
+            "use_command_number_filter"
+        ]
+        widgets = {
+            "department_filter": Select(attrs={"class": "form-select",
+                                               "aria-label": "Управление"}),
+            "command_number_filter": Select(attrs={"class": "form-select",
+                                                   "aria-label": "Отдел"}),
+        }
+
+
+class YearForm(ModelForm):
+    class Meta:
+        model = YearModel
+        exclude = []
+        widgets = {
+            "year": Select(attrs={"class": "form-select",
+                                  "aria-label": "Год"}),
+            }
