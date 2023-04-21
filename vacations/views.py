@@ -5,6 +5,8 @@ from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
 from django.db.models import Q
 from .models import EmployeeModel, VacationsModel, VacationTypeModel, DepartmentModel, EmployeeAccessWriteModel, \
     AccessLevelModel, WritePermissionModel, JobTitleModel, CommandNumberModel, UserFilterModel
@@ -21,6 +23,15 @@ class IndexView(View):
         }
         return render(request, 'vacations/index.html', content)
 
+    def post(self, request):
+        if User.objects.filter(username=request.POST['username']).exists():
+            user = authenticate(username=request.POST['username'], password=request.POST['password'])
+            try:
+                login(request, user)
+                return redirect('chart')
+            except:
+                return redirect('index')
+        return redirect('index')
 
 class ChartView(View):
     """Страница с графиком отпусков сотрудников"""
@@ -96,11 +107,11 @@ class ChartView(View):
 
         data_all = data_all.order_by('employee__last_name')
 
-        vacation_in_this_month = []
-        for empl in data_all:
-            if empl.vacation_start.year == datetime.datetime.now().year or empl.vacation_end.year == datetime.datetime.now().year:
-                if empl.vacation_start.month == datetime.datetime.now().month or empl.vacation_end.month == datetime.datetime.now().month:
-                    vacation_in_this_month.append(empl)
+        # vacation_in_this_month = []
+        # for empl in data_all:
+        #     if empl.vacation_start.year == datetime.datetime.now().year or empl.vacation_end.year == datetime.datetime.now().year:
+        #         if empl.vacation_start.month == datetime.datetime.now().month or empl.vacation_end.month == datetime.datetime.now().month:
+        #             vacation_in_this_month.append(empl)
 
         content = {"data": data_all,
                    "year": dt,

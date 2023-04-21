@@ -159,6 +159,7 @@ class UserFilterModel(models.Model):
         verbose_name = _("фильтр сотрудника")
         verbose_name_plural = _("фильтры сотрудников")
 
+
 class YearModel(models.Model):
     """Таблица годов для выпадающего списка"""
     year = models.IntegerField(verbose_name="год")
@@ -169,3 +170,22 @@ class YearModel(models.Model):
     class Meta:
         verbose_name = _("год")
         verbose_name_plural = _("года")
+
+
+class LogModel(models.Model):
+    employee = models.CharField(verbose_name="Имя пользователя", null=True, blank=True, max_length=150)
+    id_vacation = models.IntegerField(verbose_name="Id записи")
+    action = models.CharField(verbose_name="Действие", max_length=20)
+    old_vacation_start = models.DateField(verbose_name="Начало отпуска (old)", null=True, blank=True)
+    old_vacation_end = models.DateField(verbose_name="Окончание отпуска (old)", null=True, blank=True)
+    new_vacation_start = models.DateField(verbose_name="Начало отпуска (new)")
+    new_vacation_end = models.DateField(verbose_name="Окончание отпуска (new)", null=True, blank=True)
+    datetime_edit = models.DateField(verbose_name="Дата изменения", auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.datetime_edit} Пользователь {self.employee} {self.action} запись {self.id_vacation}: ' \
+               f'Было {self.old_vacation_start} - {self.old_vacation_end}.' \
+               f'Стало: {self.new_vacation_start} - {self.new_vacation_end}'
+
+
+
