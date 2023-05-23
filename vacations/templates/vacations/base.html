@@ -76,6 +76,13 @@
                 {% endif %}
 
                 <!-- Кнопка аутентификации -->
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link text-3 text-3-menu" href="{% url 'change_password' %}">Сменить пароль</a>
+                    </li>
+                {% endif %}
+
+                <!-- Кнопка аутентификации -->
                 {% if not user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link text-3 text-3-menu" href="#" onclick="openLoginModal()">Вход</a>

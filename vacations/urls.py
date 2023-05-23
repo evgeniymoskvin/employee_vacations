@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from django.contrib.auth.views import LogoutView, LoginView
+from django.contrib.auth.views import LogoutView, LoginView, PasswordChangeView
 from . import views
 
 urlpatterns = [
@@ -29,6 +29,9 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('test/', views.TestView.as_view() , name='test'),
     path('user/filters/', views.UserFilterView.as_view(), name='user-filter'),
-    path('user/filters/clear', views.ClearFilterView.as_view(), name='user-filter-clear')
+    path('user/filters/clear', views.ClearFilterView.as_view(), name='user-filter-clear'),
+    path('change_password/', PasswordChangeView.as_view(
+        template_name='vacations/system_user/change_password.html',
+        success_url='/'), name='change_password'),
 
 ]
