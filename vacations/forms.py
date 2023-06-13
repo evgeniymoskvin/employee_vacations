@@ -32,7 +32,7 @@ class AddEmployeeForm(ModelForm):
         model = EmployeeModel
         exclude = [
             'user',
-            'show_employee',
+            'work_status',
             'command_number_user',
             'department_user',
 

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import EmployeeModel, VacationsModel, VacationTypeModel, DepartmentModel, CommandNumberModel, \
+from .models import EmployeeModel, VacationsModel, VacationTypeModel, GroupDepartmentModel, CommandNumberModel, \
     AccessLevelModel, WritePermissionModel, JobTitleModel, EmployeeAccessWriteModel, YearModel
 
 # Register your models here.
@@ -12,7 +12,7 @@ class AccessLevelAdmin(admin.ModelAdmin):
 
 class EmployeeAdmin(admin.ModelAdmin):
     search_fields = ["last_name", 'first_name', 'middle_name']
-    list_filter = ['command_number_user', 'department_user', 'show_employee']
+    list_filter = ['department', 'department_group', 'work_status']
 
 class WritePermissionAdmin(admin.ModelAdmin):
     ordering = ["id"]
@@ -27,7 +27,7 @@ class YearAdmin(admin.ModelAdmin):
 admin.site.register(EmployeeModel, EmployeeAdmin)
 admin.site.register(VacationsModel)
 admin.site.register(VacationTypeModel)
-admin.site.register(DepartmentModel)
+admin.site.register(GroupDepartmentModel)
 admin.site.register(CommandNumberModel, CommandNumberAdmin)
 admin.site.register(AccessLevelModel, AccessLevelAdmin)
 admin.site.register(WritePermissionModel, WritePermissionAdmin)

@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.db.models import Q
-from .models import EmployeeModel, VacationsModel, VacationTypeModel, DepartmentModel, EmployeeAccessWriteModel, \
+from .models import EmployeeModel, VacationsModel, VacationTypeModel, GroupDepartmentModel, EmployeeAccessWriteModel, \
     AccessLevelModel, WritePermissionModel, JobTitleModel, CommandNumberModel, UserFilterModel
 from .forms import AddVacationForm, AddEmployeeForm, LoginForm, FilterForm, YearForm
 
@@ -44,20 +44,20 @@ class ChartView(View):
             user_filters = UserFilterModel.objects.get(employee=user)
         except:
             user_filters = UserFilterModel.objects.create(employee=user, year_filter=dt,
-                                                          department_filter=user.department_user,
-                                                          command_number_filter=user.command_number_user)
+                                                          department_filter=user.department_group,
+                                                          command_number_filter=user.department)
             user_filters.save()
 
         get_user_permission = EmployeeAccessWriteModel.objects.get(employee=user.id).access_level.id
         form_add_vacation = AddVacationForm()
         form_add_vacation.fields['employee'].queryset = EmployeeModel.objects.filter(
-            command_number_user=user.command_number_user)
+            department=user.department)
         form_year_filter = YearForm()
         form_filter = FilterForm()
         # Для руководителей управления фильтруем отделы только их управления
         if get_user_permission == 2:
             form_filter.fields['command_number_filter'].queryset = CommandNumberModel.objects.filter(
-                department=user.department_user)
+                department=user.department_group)
 
         dt = user_filters.year_filter
         flag_add_vacation = EmployeeAccessWriteModel.objects.get(employee=user.id).write_permission
@@ -69,7 +69,7 @@ class ChartView(View):
             data_all = VacationsModel.objects.filter(
                 Q(vacation_start__gte=f"{dt}-01-01") | Q(vacation_end__lte=f"{dt}-12-31")).filter(
                 vacation_start__lt=f"{dt + 1}-01-01").filter(vacation_end__gt=f"{dt - 1}-12-31").filter(
-                employee__command_number_user_id=user.command_number_user_id)
+                employee__department_id=user.department_id)
         elif get_user_permission == 2:
             # Если права пользователя == 2 (управление) то фильтруем данные по году, а так же по управлению
             filter_user = UserFilterModel.objects.get(employee__user=request.user)
@@ -78,12 +78,12 @@ class ChartView(View):
                 data_all = VacationsModel.objects.filter(
                     Q(vacation_start__gte=f"{dt}-01-01") | Q(vacation_end__lte=f"{dt}-12-31")).filter(
                     vacation_start__lt=f"{dt + 1}-01-01").filter(vacation_end__gt=f"{dt - 1}-12-31").filter(
-                    employee__command_number_user_id=filter_user.command_number_filter_id)
+                    employee__department_id=filter_user.command_number_filter_id)
             else:
                 data_all = VacationsModel.objects.filter(
                     Q(vacation_start__gte=f"{dt}-01-01") | Q(vacation_end__lte=f"{dt}-12-31")).filter(
                     vacation_start__lt=f"{dt + 1}-01-01").filter(vacation_end__gt=f"{dt - 1}-12-31").filter(
-                    employee__department_user_id=user.department_user_id)
+                    employee__department_group_id=user.department_group_id)
         elif get_user_permission == 1:
             # Если права просмотра == 1 (полные)
             filter_user = UserFilterModel.objects.get(employee__user=request.user)
@@ -97,13 +97,13 @@ class ChartView(View):
                 data_all = VacationsModel.objects.filter(
                     Q(vacation_start__gte=f"{dt}-01-01") | Q(vacation_end__lte=f"{dt}-12-31")).filter(
                     vacation_start__lt=f"{dt + 1}-01-01").filter(vacation_end__gt=f"{dt - 1}-12-31").filter(
-                    employee__department_user_id=filter_user.department_filter_id)
+                    employee__department_group_id=filter_user.department_filter_id)
             # Получаем настройки фильтров, если отдел True, то фильтруем данные по году и отделу
             elif filter_user.use_command_number_filter is True:
                 data_all = VacationsModel.objects.filter(
                     Q(vacation_start__gte=f"{dt}-01-01") | Q(vacation_end__lte=f"{dt}-12-31")).filter(
                     vacation_start__lt=f"{dt + 1}-01-01").filter(vacation_end__gt=f"{dt - 1}-12-31").filter(
-                    employee__command_number_user_id=filter_user.command_number_filter_id)
+                    employee__department_id=filter_user.command_number_filter_id)
 
         data_all = data_all.order_by('employee__last_name')
 
@@ -171,16 +171,16 @@ class ChangeEmployeeView(View):
         data_employee = EmployeeModel.objects.none()
         if get_user_permission == 3:
             # Если права пользователя == 3 (отдел) то фильтруем по отделу
-            data_employee = EmployeeModel.objects.filter(command_number_user=user.command_number_user)
+            data_employee = EmployeeModel.objects.filter(department=user.department)
         elif get_user_permission == 2:
             # Если права пользователя == 2 (управление) то фильтруем по управлению
-            data_employee = EmployeeModel.objects.filter(department_user=user.department_user)
+            data_employee = EmployeeModel.objects.filter(department_group=user.department_group)
         elif get_user_permission == 1:
             # Если права просмотра == 1 (полные) то показываем всех
             data_employee = EmployeeModel.objects.all()
 
         # Фильтруем сотрудников по свойству отображения и сортируем по фамилии
-        data_employee = data_employee.filter(show_employee=True).order_by('last_name')
+        data_employee = data_employee.filter(work_status=True).order_by('last_name')
         content = {"data_employee": data_employee,
                    "employee_form": form_add_employee,
                    "flag_add_vacation": flag_add_vacation}
@@ -192,8 +192,8 @@ class ChangeEmployeeView(View):
         form = AddEmployeeForm(request.POST)
         if form.is_valid():
             new_emp = form.save(commit=False)
-            new_emp.department_user = user.department_user
-            new_emp.command_number_user = user.command_number_user
+            new_emp.department_group = user.department_group
+            new_emp.department = user.department
             form.save()
         return redirect(f'employees')
 
@@ -206,7 +206,7 @@ class DeleteEmployeeView(View):
             delete_emp_id = int(request.POST.get('delete-emp-id'))
             obj = EmployeeModel.objects.get(id=delete_emp_id)
             print(obj)
-            obj.show_employee = False
+            obj.work_status = False
             obj.save()
         return redirect(f'employees')
 

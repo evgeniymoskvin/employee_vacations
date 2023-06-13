@@ -14,29 +14,33 @@ class JobTitleModel(models.Model):
     class Meta:
         verbose_name = _("должность")
         verbose_name_plural = _("должности")
+        managed = False
+        db_table = 'ToDo_tasks_jobtitlemodel'
 
     def __str__(self):
         return f'{self.job_title}'
 
 
-class DepartmentModel(models.Model):
+class GroupDepartmentModel(models.Model):
     """Список управлений"""
-    department_abr = models.CharField("Сокращенное название управления", max_length=10)
-    department_name = models.CharField("Полное название управления", max_length=250)
+    group_dep_abr = models.CharField("Сокращенное название управления", max_length=10)
+    group_dep_name = models.CharField("Полное название управления", max_length=250)
 
     def __str__(self):
-        return f'{self.department_abr}, {self.department_name}'
+        return f'{self.group_dep_abr}, {self.group_dep_name}'
 
     class Meta:
         verbose_name = _("управление")
         verbose_name_plural = _("управления")
+        managed = False
+        db_table = 'ToDo_tasks_groupdepartmentmodel'
 
 
 class CommandNumberModel(models.Model):
     """Номера отделов"""
     command_number = models.IntegerField("Номер отдела/Сокращение")
     command_name = models.CharField("Наименование отдела", max_length=150)
-    department = models.ForeignKey(DepartmentModel, verbose_name="Управление", on_delete=models.SET_NULL, null=True,
+    department = models.ForeignKey(GroupDepartmentModel, verbose_name="Управление", on_delete=models.SET_NULL, null=True,
                                    blank=True)
 
     def __str__(self):
@@ -45,7 +49,8 @@ class CommandNumberModel(models.Model):
     class Meta:
         verbose_name = _("номер отдела")
         verbose_name_plural = _("номера отделов")
-
+        managed = False
+        db_table = 'ToDo_tasks_commandnumbermodel'
 
 class VacationTypeModel(models.Model):
     """Вид отпуска"""
@@ -86,25 +91,36 @@ class WritePermissionModel(models.Model):
 
 class EmployeeModel(models.Model):
     """Таблица сотрудников"""
-    user = models.OneToOneField(User, models.PROTECT, verbose_name="Login", null=True, blank=True)
-    personnel_number = models.CharField("Табельный номер", max_length=20, null=True)
+    user = models.OneToOneField(User, models.PROTECT, verbose_name="Пользователь")
     last_name = models.CharField("Фамилия", max_length=150)
     first_name = models.CharField("Имя", max_length=150)
     middle_name = models.CharField("Отчество", max_length=150)
-    department_user = models.ForeignKey(DepartmentModel, models.SET_NULL, verbose_name="Управление", null=True)
-    command_number_user = models.ForeignKey(CommandNumberModel, models.SET_NULL, verbose_name="Отдел", null=True)
-    email_user = models.EmailField(verbose_name="Email", null=True, blank=True)
-    show_employee = models.BooleanField(verbose_name="Отображать сотрудника", default=True)
-    days_remaining = models.IntegerField(verbose_name="Количество неиспользованных дней", default=0)
-
-    # show_year = models.IntegerField(verbose_name="Отображаемый год", default=datetime.datetime.today().year)
+    personnel_number = models.CharField("Табельный номер", max_length=20, null=True, blank=True, default=None)
+    job_title = models.ForeignKey(JobTitleModel, on_delete=models.PROTECT, null=True, verbose_name="Должность")
+    department = models.ForeignKey(CommandNumberModel, on_delete=models.PROTECT, null=True, verbose_name="№ отдела")
+    user_phone = models.IntegerField("№ телефона", null=True, default=None)
+    department_group = models.ForeignKey(GroupDepartmentModel, on_delete=models.SET_NULL, default=None, null=True,
+                                         verbose_name="Управление")
+    right_to_sign = models.BooleanField(verbose_name="Право подписывать", default=False)
+    check_edit = models.BooleanField("Возможность редактирования", default=True)
+    can_make_task = models.BooleanField("Возможность выдавать задания", default=True)
+    cpe_flag = models.BooleanField("Флаг ГИП (техническая метка)", default=False)
+    mailing_list_check = models.BooleanField("Получать рассылку", default=True)
+    work_status = models.BooleanField("Сотрудник работает", default=True)
 
     def __str__(self):
         return f'{self.last_name} {self.first_name} {self.middle_name}'
 
     class Meta:
+        managed = False
         verbose_name = _("сотрудник")
         verbose_name_plural = _("сотрудники")
+        db_table = 'ToDo_tasks_employee'
+
+class RemainingDaysModel(models.Model):
+    """Сколько дней осталось"""
+    employee = models.ForeignKey(EmployeeModel, on_delete=models.PROTECT, verbose_name="Сотрудник")
+    days_remaining = models.IntegerField(verbose_name="Количество неиспользованных дней", default=0)
 
 
 class VacationsModel(models.Model):
@@ -145,7 +161,7 @@ class UserFilterModel(models.Model):
     """Таблица фильтрации записей для каждого пользователя"""
     employee = models.OneToOneField(EmployeeModel, on_delete=models.CASCADE, verbose_name="Сотрудник")
     year_filter = models.IntegerField(verbose_name="Год", blank=True, null=True)
-    department_filter = models.ForeignKey(DepartmentModel, verbose_name="Управление", blank=True, null=True,
+    department_filter = models.ForeignKey(GroupDepartmentModel, verbose_name="Управление", blank=True, null=True,
                                           on_delete=models.CASCADE)
     command_number_filter = models.ForeignKey(CommandNumberModel, verbose_name="Отдел", blank=True, null=True,
                                               on_delete=models.CASCADE)
@@ -186,6 +202,7 @@ class LogModel(models.Model):
         return f'{self.datetime_edit} Пользователь {self.employee} {self.action} запись {self.id_vacation}: ' \
                f'Было {self.old_vacation_start} - {self.old_vacation_end}.' \
                f'Стало: {self.new_vacation_start} - {self.new_vacation_end}'
+
 
 
 
