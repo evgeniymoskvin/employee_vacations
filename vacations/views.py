@@ -47,8 +47,11 @@ class ChartView(View):
                                                           department_filter=user.department_group,
                                                           command_number_filter=user.department)
             user_filters.save()
-
-        get_user_permission = EmployeeAccessWriteModel.objects.get(employee=user.id).access_level.id
+        try:
+            get_user_permission = EmployeeAccessWriteModel.objects.get(employee=user.id).access_level.id
+        except:
+            get_user_permission = EmployeeAccessWriteModel.objects.create(employee=user, access_level_id=3, write_permission=False)
+            get_user_permission.save()
         form_add_vacation = AddVacationForm()
         form_add_vacation.fields['employee'].queryset = EmployeeModel.objects.filter(
             department=user.department)
