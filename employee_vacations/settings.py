@@ -130,3 +130,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = 'chart'
 LOGOUT_REDIRECT_URL = 'index'
 
+# SESSION_COOKIE_DOMAIN = '.example.com'
+# SESSION_COOKIE_NAME = 'examplesessionid'
+
+

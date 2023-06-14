@@ -7,6 +7,10 @@ from .models import EmployeeModel, VacationsModel, VacationTypeModel, GroupDepar
 class CommandNumberAdmin(admin.ModelAdmin):
     ordering = ["command_number"]
 
+class VacationsAdmin(admin.ModelAdmin):
+    ordering = ["employee"]
+    search_fields = ["employee", "day_count"]
+
 class AccessLevelAdmin(admin.ModelAdmin):
     ordering = ["id"]
 
@@ -24,11 +28,11 @@ class EmployeeAccessWriteAdmin(admin.ModelAdmin):
 class YearAdmin(admin.ModelAdmin):
     ordering = ["year"]
 
-admin.site.register(EmployeeModel, EmployeeAdmin)
-admin.site.register(VacationsModel)
+# admin.site.register(EmployeeModel, EmployeeAdmin)
+admin.site.register(VacationsModel, VacationsAdmin)
 admin.site.register(VacationTypeModel)
-admin.site.register(GroupDepartmentModel)
-admin.site.register(CommandNumberModel, CommandNumberAdmin)
+# admin.site.register(GroupDepartmentModel)
+# admin.site.register(CommandNumberModel, CommandNumberAdmin)
 admin.site.register(AccessLevelModel, AccessLevelAdmin)
 admin.site.register(WritePermissionModel, WritePermissionAdmin)
 admin.site.register(JobTitleModel)
